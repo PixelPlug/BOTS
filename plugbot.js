@@ -1,45 +1,20 @@
-/*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+////////////////////////////////////////////////
+//       MOD by Thalles Scheffer              //
+///////////////////////////////////////////////
 
 /*
-* TERMS OF REPRODUCTION USE
-*
-* 1. Provide a link back to the original repository (this repository), as
-* in, https://github.com/ConnerGDavis/Plugbot, that is well-visible
-* wherever the source is being reproduced. For example, should you
-* display it on a website, you should provide a link above/below that
-* which the users use, titled something such as "ORIGINAL AUTHOR".
-*
-* 2. Retain these three comments: the GNU GPL license statement, this comment,
-* and that below it, that details the author and purpose.
-*
-* Failure to follow these terms will result in me getting very angry at you
-* and having your software tweaked or removed if possible. Either way, you're
-* still an idiot for not following such a basic rule, so at least I'll have
-* that going for me.
-*/
+        TERMS OF REPRODUCTION USE
+            ORIGINAL AUTHOR
+             (Conner Davis)
+            ORIGINAL SCRIPT
+   (https://github.com/ConnerGDavis/Plugbot)
+/*
 
-/*
-* NOTE: This is 100% procedural because I can't see a reason to add classes, etc.
-*
-* @author Conner Davis (Fugitive. on Plug.dj)
+
+
+* Da BACANA! Automaticamente.
 */
-/*
-* Whether the user has currently enabled auto-woot.
-*/
-var autowoot;
+var autobacana;
 /*
 * Whether the user has currently enabled auto-queueing.
 */
@@ -63,7 +38,7 @@ var skippingVideo = false;
 /*
 * Cookie constants
 */
-var COOKIE_WOOT = 'autowoot';
+var COOKIE_BACANA = 'autobacana';
 var COOKIE_QUEUE = 'autoqueue';
 var COOKIE_HIDE_VIDEO = 'hidevideo';
 var COOKIE_TEST = 'test';
@@ -96,7 +71,7 @@ function initAPIListeners()
     API.on(API.DJ_UPDATE, queueUpdate);
 
     /*
-* This listens for whenever a user in the room either WOOT!s or Mehs the current song.
+* Isso faz mostrar quem achou BACANA! ou CHATO na lista .
 */
     API.on(API.VOTE_UPDATE, function (obj)
 {
@@ -146,14 +121,14 @@ function displayUI()
 */
     $('#chat').prepend('<div id="plugbot-ui"></div>');
 
-    var cWoot = autowoot ? '#3FFF00' : '#ED1C24';
+    var cbacana = autobacana ? '#3FFF00' : '#ED1C24';
     var cQueue = autoqueue ? '#3FFF00' : '#ED1C24';
 	var cTest = test ? '#3FFF00' : '#ED1C24';
     var cHideVideo = hideVideo ? '#3FFF00' : '#ED1C24';
     var cUserList = userList ? '#3FFF00' : '#ED1C24';
 
-    $('#plugbot-ui').append('<p id="plugbot-btn-woot" style="color:' + cWoot
-        + '">auto-woot</p><p id="plugbot-btn-queue" style="color:' + cQueue
+    $('#plugbot-ui').append('<p id="plugbot-btn-bacana" style="color:' + cbacana
+        + '">auto-bacana</p><p id="plugbot-btn-queue" style="color:' + cQueue
         + '">auto-queue</p><p id="plugbot-btn-hidevideo" style="color:' + cHideVideo
 		+ '">auto-test</p><p id="plugbot-btn-test" style="color:' + cTest
         + '">hide video</p><p id="plugbot-btn-skipvideo" style="color:#ED1C24">skip video</p><p id="plugbot-btn-userlist" style="color:'
@@ -188,19 +163,19 @@ function initUIListeners()
     });
 
     /*
-* Toggle auto-woot.
+* Toggle auto-bacana.
 */
-    $('#plugbot-btn-woot').on('click', function()
+    $('#plugbot-btn-bacana').on('click', function()
     {
-        autowoot = !autowoot;
-        $(this).css('color', autowoot ? '#3FFF00' : '#ED1C24');
+        autobacana = !autobacana;
+        $(this).css('color', autobacana ? '#3FFF00' : '#ED1C24');
 
-        if (autowoot)
+        if (autobacana)
         {
             $('#button-vote-positive').click();
         }
 
-        jaaulde.utils.cookies.set(COOKIE_WOOT, autowoot);
+        jaaulde.utils.cookies.set(COOKIE_bacana, autobacana);
     });
 
     /*
@@ -315,9 +290,9 @@ function djAdvanced(obj)
     }
 
     /*
-* If auto-woot is enabled, WOOT! the song.
+* If auto-bacana is enabled, bacana! the song.
 */
-    if (autowoot)
+    if (autobacana)
     {
         $('#button-vote-positive').click();
     }
@@ -516,7 +491,7 @@ function appendUser(user)
 /**
 * Determine the color of a person's username in the userlist based on their current vote.
 *
-* @param vote Their vote: woot, undecided or meh.
+* @param vote Their vote: bacana, undecided or meh.
 */
 function colorByVote(vote)
 {
@@ -530,7 +505,7 @@ function colorByVote(vote)
             return '#c8303d';
         case 0:	// Undecided
             return '#fff';
-        case 1:	// Woot
+        case 1:	// bacana
             return '#c2e320';
     }
 }
@@ -557,7 +532,7 @@ function imagePrefixByVote(vote)
         case 0:
             return '_undecided.png';
         case 1:
-            return '_woot.png';
+            return '_bacana.png';
     }
 }
 
@@ -643,10 +618,10 @@ function readCookies()
     jaaulde.utils.cookies.setOptions(newOptions);
 
     /*
-* Read Auto-Woot cookie (true by default)
+* Read Auto-bacana cookie (true by default)
 */
-    var value = jaaulde.utils.cookies.get(COOKIE_WOOT);
-    autowoot = value != null ? value : true;
+    var value = jaaulde.utils.cookies.get(COOKIE_bacana);
+    autobacana = value != null ? value : true;
 
     /*
 * Read Auto-Queue cookie (false by default)
@@ -692,9 +667,9 @@ $('body').append('<div id="plugbot-userlist"></div>');
 function onCookiesLoaded()
 {
     /*
-* Hit the woot button, if autowoot is enabled.
+* Hit the bacana button, if autobacana is enabled.
 */
-    if (autowoot)
+    if (autobacana)
     {
         $('#button-vote-positive').click();
     }
