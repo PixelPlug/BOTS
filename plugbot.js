@@ -1,741 +1,109 @@
-////////////////////////////////////////////////
-//       MOD by Thalles Scheffer              //
-///////////////////////////////////////////////
+}
 
-/*
-        TERMS OF REPRODUCTION USE
-            ORIGINAL AUTHOR
-             (Conner Davis)
-            ORIGINAL SCRIPT
-   (https://github.com/ConnerGDavis/Plugbot)
-/*
-
-
-
-* Da BACANA! Automaticamente.
-*/
-var autobacana;
-/*
-* Whether the user has currently enabled auto-queueing.
-*/
-var autoqueue;
-/*
-* Whether or not the user has enabled hiding this video.
-*/
-var hideVideo;
-/*
-*/
-var test;
-/*
-* Whether or not the user has enabled the userlist.
-*/
-var userList;
-/*
-* Whether the current video was skipped or not.
-*/
-var skippingVideo = false;
-
-/*
-* Cookie constants
-*/
-var COOKIE_BACANA = 'autobacana';
+var mentioned = false;
+var clicked = false;
+var skipped = false;
+var predictor = false;
+var timeToWait = 600000;
+var clickWait = 5000;
+var skipWait = 2000;
+var timePassed = 0;
+var clickPassed = 0;
+var skipPassed = 0;
+var predictPassed = 0;
+var timer = null;
+var clickTimer = null;
+var skipTimer = null;
+var predictTimer = null;
+var COOKIE_WOOT = 'autowoot';
 var COOKIE_QUEUE = 'autoqueue';
+var COOKIE_STREAMING = 'streaming';
 var COOKIE_HIDE_VIDEO = 'hidevideo';
-var COOKIE_TEST = 'test';
-var COOKIE_USERLIST = 'userlist';
-
-/*
-* Maximum amount of people that can be in the waitlist.
-*/
+var COOKIE_LEFT = 'left';
 var MAX_USERS_WAITLIST = 50;
 
-/**
-* Initialise all of the Plug.dj API listeners which we use to asynchronously intercept specific events and the data
-* attached with them.
-*/
-function initAPIListeners()
-{
-    /*
-* This listens in for whenever a new DJ starts playing.
-*/
-    API.on(API.DJ_ADVANCE, djAdvanced);
-
-    /*
-* This listens for changes in the waiting list
-*/
-    API.on(API.WAIT_LIST_UPDATE, queueUpdate);
-
-    /*
-* This listens for changes in the dj booth
-*/
-    API.on(API.DJ_UPDATE, queueUpdate);
-
-    /*
-* Isso faz mostrar quem achou BACANA! ou CHATO na lista .
-*/
-    API.on(API.VOTE_UPDATE, function (obj)
-{
-        if (userList)
-{
-            populateUserlist();
-        }
-    });
-
-    /*
-* Whenever a user joins, this listener is called.
-*/
-    API.on(API.USER_JOIN, function (user)
-    {
-        if (userList)
-        {
-            populateUserlist();
-        }
-    });
-
-    /*
-* Called upon a user exiting the room.
-*/
-    API.on(API.USER_LEAVE, function (user)
-    {
-        if (userList)
-        {
-            populateUserlist();
-        }
-    });
-}
-
-
-/**
-* Renders all of the Plug.bot "UI" that is visible beneath the video player.
-*/
-function displayUI()
-{
-    /*
-* Be sure to remove any old instance of the UI, in case the user reloads the script without refreshing the page
-* (updating.)
-*/
-    $('#plugbot-ui').remove();
-
-    /*
-* Generate the HTML code for the UI.
-*/
-    $('#chat').prepend('<div id="plugbot-ui"></div>');
-
-    var cbacana = autobacana ? '#3FFF00' : '#ED1C24';
-    var cQueue = autoqueue ? '#3FFF00' : '#ED1C24';
-	var cTest = test ? '#3FFF00' : '#ED1C24';
-    var cHideVideo = hideVideo ? '#3FFF00' : '#ED1C24';
-    var cUserList = userList ? '#3FFF00' : '#ED1C24';
-
-    $('#plugbot-ui').append('<p id="plugbot-btn-bacana" style="color:' + cbacana
-        + '">auto-bacana</p><p id="plugbot-btn-queue" style="color:' + cQueue
-        + '">auto-queue</p><p id="plugbot-btn-hidevideo" style="color:' + cHideVideo
-		+ '">auto-test</p><p id="plugbot-btn-test" style="color:' + cTest
-        + '">hide video</p><p id="plugbot-btn-skipvideo" style="color:#ED1C24">skip video</p><p id="plugbot-btn-userlist" style="color:'
-        + cUserList + '">userlist</p>');
-}
-
-/**
-* For every button on the Plug.bot UI, we have listeners backing them that are built to intercept the user's clicking
-* each button. Based on the button that they clicked, we can execute some logic that will in some way affect their
-* experience.
-*/
-function initUIListeners()
-{
-    /*
-* Toggle userlist.
-*/
-    $('#plugbot-btn-userlist').on("click", function()
-    {
-        userList = !userList;
-        $(this).css('color', userList ? '#3FFF00' : '#ED1C24');
-        $('#plugbot-userlist').css('visibility', userList ? 'visible' : 'hidden');
-
-        if (!userList)
-        {
-            $('#plugbot-userlist').empty();
-        }
-        else
-        {
-            populateUserlist();
-        }
-        jaaulde.utils.cookies.set(COOKIE_USERLIST, userList);
-    });
-
-    /*
-* Toggle auto-bacana.
-*/
-    $('#plugbot-btn-bacana').on('click', function()
-    {
-        autobacana = !autobacana;
-        $(this).css('color', autobacana ? '#3FFF00' : '#ED1C24');
-
-        if (autobacana)
-        {
-            $('#button-vote-positive').click();
-        }
-
-        jaaulde.utils.cookies.set(COOKIE_bacana, autobacana);
-    });
-
-    /*
-* Toggle hide video.
-*/
-    $('#plugbot-btn-hidevideo').on('click', function()
-    {
-        hideVideo = !hideVideo;
-        $(this).css('color', hideVideo ? '#3FFF00' : '#ED1C24');
-        $(this).text(hideVideo ? 'hiding video' : 'hide video');
-        $('#yt-frame').animate(
-            {
-                'height': (hideVideo ? '0px' : '271px')
-            },
-            {
-                duration: 'fast'
-            });
-        $('#playback .frame-background').animate(
-            {
-                'opacity': (hideVideo ? '0' : '0.91')
-            },
-            {
-                duration: 'medium'
-            });
-        jaaulde.utils.cookies.set(COOKIE_HIDE_VIDEO, hideVideo);
-    });
-
-    /*
-	* TEST.
-*/
-    $('#plugbot-btn-test').on('click', function()
-    {
-        test = !test;
-        $(this).css('color', test ? '#3FFF00' : '#ED1C24');
-        $(this).text(test ? 'testando' : 'testando script');
-        $('#yt-frame').animate(
-            {
-                'height': (TEST ? '0px' : '271px')
-            },
-            {
-                duration: 'fast'
-            });
-        $('#playback .frame-background').animate(
-            {
-                'opacity': (TEST ? '0' : '0.91')
-            },
-            {
-                duration: 'medium'
-            });
-        jaaulde.utils.cookies.set(COOKIE_TEST, test);
-    });
-
-    /*
-* Skip the current video.
-*/
-    $('#plugbot-btn-skipvideo').on('click', function()
-    {
-        skippingVideo = !skippingVideo;
-        $(this).css('color', skippingVideo ? '#3FFF00' : '#ED1C24');
-        $(this).text(skippingVideo ? 'skipping video' : 'skip video');
-        if (hideVideo == skippingVideo)
-        {
-            $('#button-sound').click();
-        }
-        else
-        {
-            $('#plugbot-btn-hidevideo').click();
-            $('#button-sound').click();
-        }
-    });
-
-    /*
-* Toggle auto-queue/auto-DJ.
-*/
-    $('#plugbot-btn-queue').on('click', function()
-    {
-        autoqueue = !autoqueue;
-        $(this).css('color', autoqueue ? '#3FFF00' : '#ED1C24');
-
-        if (autoqueue && !isInQueue())
-        {
-            joinQueue();
-        }
-        jaaulde.utils.cookies.set(COOKIE_QUEUE, autoqueue);
-    });
-}
-
-/**
-* Called whenever a new DJ begins playing in the room.
-*
-* @param obj This contains the current DJ's data.
-*/
-function djAdvanced(obj)
-{
-    /*
-* If they want the video to be hidden, be sure to re-hide it.
-*/
-    if (hideVideo)
-    {
-        $('#yt-frame').css('height', '0px');
-        $('#playback .frame-background').css('opacity', '0.0');
-    }
-
-    /*
-* If they want to skip the next video, do it.
-*/
-    if (skippingVideo)
-    {
-        $('#plugbot-btn-skipvideo').css('color', '#ED1C24').text('skip video');
-        $('#button-sound').click();
-        skippingVideo = false;
-    }
-
-    /*
-* If auto-bacana is enabled, bacana! the song.
-*/
-    if (autobacana)
-    {
-        $('#button-vote-positive').click();
-    }
-
-    /*
-* If the userlist is enabled, re-populate it.
-*/
-    if (userList)
-    {
-        populateUserlist();
-    }
-}
-
-/**
-* Called whenever a change happens to the queue.
-*/
-function queueUpdate()
-{
-    /*
-* If auto-queueing has been enabled, and we are currently not in the waitlist, then try to join the list.
-*/
-    if (autoqueue && !isInQueue())
-    {
-        joinQueue();
-    }
-}
-
-/**
-* Checks whether or not the user is already in queue.
-*
-* @return True if the user is in queue, else false.
-*/
-function isInQueue()
-{
-    return API.getBoothPosition() !== -1 || API.getWaitListPosition() !== -1;
-}
-
-/**
-* Tries to add the user to the queue or the booth if there is no queue.
-*/
-function joinQueue()
-{
-    if ($('#button-dj-play').css('display') === 'block')
-    {
-        $('#button-dj-play').click();
-    }
-else if (API.getWaitList().length < MAX_USERS_WAITLIST)
-{
-       API.djJoin();
-    }
-}
-
-/**
-* Generates every user in the room and their current vote as colour-coded text. Also, moderators get the star next to
-* their name.
-*/
-function populateUserlist()
-{
-    /*
-* Destroy the old userlist DIV and replace it with a fresh empty one to work with.
-*/
-    $('#plugbot-userlist').html(' ');
-
-    /*
-* Update the current # of users in the room.
-*/
-    $('#plugbot-userlist').append('<h1 style="text-indent:12px;color:#42A5DC;font-size:14px;font-variant:small-caps;">Users: ' + API.getUsers().length + '</h1>');
-
-    /*
-* You can mention people from the userlist.
-*/
-    $('#plugbot-userlist').append('<p style="padding-left:12px;text-indent:0px !important;font-style:italic;color:#42A5DC;font-size:11px;">Click a username to<br />@mention them! *NEW</p><br />');
-
-    /*
-* If the user is in the waitlist, show them their current spot.
-*/
-    if ($('#button-dj-waitlist-view').attr('title') !== '')
-    {
-        if ($('#button-dj-waitlist-leave').css('display') === 'block' && ($.inArray(API.getDJs(), API.getUser()) == -1)) {
-            var spot = $('#button-dj-waitlist-view').attr('title').split('(')[1];
-            spot = spot.substring(0, spot.indexOf(')'));
-            $('#plugbot-userlist').append('<h1 id="plugbot-queuespot"><span style="font-variant:small-caps">Waitlist:</span> ' + spot + '</h3><br />');
-        }
-    }
-
-    /*
-* An array of all of the room's users.
-*/
-    var users = new Array();
-
-    /*
-* Populate the users array with the next user in the room (this is stored alphabetically.)
-*/
-    for (user in API.getUsers())
-    {
-        users.push(API.getUsers()[user]);
-    }
-
-    /*
-* For every user, call the #appendUser(username, vote) method which will display their username with any colour
-* coding that they match.
-*/
-    for (user in users)
-    {
-        var user = users[user];
-        appendUser(user);
-    }
-}
-
-/**
-* Appends another user's username to the userlist.
-*
-* @param user The user we're adding to the userlist.
-*/
-function appendUser(user)
-{
-    var username = user.username;
-    /*
-* A new feature to Pepper, which is a permission value, may be 1-5 AFAIK.
-*
-* 1: normal (or 0)
-* 2: bouncer
-* 3: manager
-* 4/5: (co-)host
-*/
-    var permission = user.permission;
-
-    /*
-* If they're an admin, set them as a fake permission, makes it easier.
-*/
-    if (user.admin)
-    {
-        permission = 99;
-    }
-
-    /*
-* For special users, we put a picture of their rank (the star) before their name, and colour it based on their
-* vote.
-*/
-    var imagePrefix;
-    switch (permission)
-    {
-        case 0:
-            imagePrefix = 'normal';
-            break;
-        case 1:
-            imagePrefix = 'featured';
-            break;
-        case 2:
-            imagePrefix = 'bouncer';
-            break;
-        case 3:
-            imagePrefix = 'manager';
-            break;
-        case 4:
-        case 5:
-            imagePrefix = 'host';
-            break;
-        case 99:
-            imagePrefix = 'admin';
-            break;
-    }
-
-    /*
-* If they're the current DJ, override their rank and show a different colour, a shade of blue, to denote that
-* they're playing right now (since they can't vote their own song.)
-*/
-    if (API.getDJs()[0].username == username)
-    {
-        if (imagePrefix === 'normal')
-        {
-            drawUserlistItem('void', '#42A5DC', username);
-        }
-        else
-        {
-            drawUserlistItem(imagePrefix + '_current.png', '#42A5DC', username);
-        }
-    }
-    else if (imagePrefix === 'normal')
-    {
-        /*
-* If they're a normal user, they have no special icon.
-*/
-        drawUserlistItem('void', colorByVote(user.vote), username);
-    }
-    else
-    {
-        /*
-* Otherwise, they're ranked and they aren't playing,
-* so draw the image next to them.
-*/
-        drawUserlistItem(imagePrefix + imagePrefixByVote(user.vote), colorByVote(user.vote), username);
-    }
-}
-
-/**
-* Determine the color of a person's username in the userlist based on their current vote.
-*
-* @param vote Their vote: bacana, undecided or meh.
-*/
-function colorByVote(vote)
-{
-    if (!vote)
-    {
-        return '#fff'; // blame Boycey
-    }
-    switch (vote)
-    {
-        case -1:	// Meh
-            return '#c8303d';
-        case 0:	// Undecided
-            return '#fff';
-        case 1:	// bacana
-            return '#c2e320';
-    }
-}
-
-/**
-* Determine the "image prefix", or a picture that shows up next to each user applicable in the userlist. This denotes
-* their rank, and its color is changed based on that user's vote.
-*
-* @param vote
-* Their current vote.
-* @returns The varying path to the PNG image for this user, as a string. NOTE: this only provides the suffix
-* of the path.. the prefix of the path, which is admin_, host_, etc. is done elsewhere.
-*/
-function imagePrefixByVote(vote)
-{
-    if (!vote)
-    {
-        return '_undecided.png'; // blame boycey again
-    }
-    switch (vote)
-    {
-        case -1:
-            return '_meh.png';
-        case 0:
-            return '_undecided.png';
-        case 1:
-            return '_bacana.png';
-    }
-}
-
-/**
-* Draw a user in the userlist.
-*
-* @param imagePath An image prefixed by their username denoting rank; bouncer/manager/etc. 'void' for normal users.
-* @param color Their color in the userlist, based on vote.
-* @param username Their username.
-*/
-function drawUserlistItem(imagePath, color, username)
-{
-    /*
-* If they aren't a normal user, draw their rank icon.
-*/
-    if (imagePath !== 'void')
-    {
-        var realPath = 'http://www.theedmbasement.com/basebot/userlist/' + imagePath;
-        //$('#plugbot-userlist').append('<img src="' + realPath + '" align="left" style="margin-left:6px;margin-top:2px" />');
-    }
-
-    /*
-* Write the HTML code to the userlist.
-*/
-    /*$('#plugbot-userlist').append(
-'<p style="cursor:pointer;' + (imagePath === 'void' ? '' : 'text-indent:6px !important;') + 'color:' + color + ';'
-+ ((API.getDJs()[0].username == username) ? 'font-size:15px;font-weight:bold;' : '')
-+ '" onclick="$(\'#chat-input-field\').val($(\'#chat-input-field\').val() + \'@' + username + ' \').focus();">'
-+ username + '</p>');*/
-    $('#plugbot-userlist').append('<p style="cursor:pointer;color:' + color + ';'
-        + ((API.getDJs()[0].username == username) ? 'font-size:15px;font-weight:bold;' : '')
-        + '" onclick="$(\'#chat-input-field\').val($(\'#chat-input-field\').val() + \'@' + username + ' \').focus();">'
-        + username + '</p>');
-}
-
-
-///////////////////////////////////////////////////////////
-////////// EVERYTHING FROM HERE ON OUT IS INIT ////////////
-///////////////////////////////////////////////////////////
-
-/*
-* Clear the old code so we can properly update everything.
-*/
-$('#plugbot-userlist').remove();
-$('#plugbot-css').remove();
-$('#plugbot-js').remove();
-
-
-/*
-* Include cookie library
-*
-* TODO Replace with equivalent jQuery, I'm sure it's less work than this
-*/
-var head = document.getElementsByTagName('head')[0];
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.src = 'http://cookies.googlecode.com/svn/trunk/jaaulde.cookies.js';
-script.onreadystatechange = function()
-{
-    if (this.readyState == 'complete')
-    {
-        readCookies();
-    }
-}
-script.onload = readCookies;
-head.appendChild(script);
-
-
-/**
-* Read cookies when the library is loaded.
-*/
-function readCookies()
-{
-    /*
-* Changing default cookie settings
-*/
-    var currentDate = new Date();
-    currentDate.setFullYear(currentDate.getFullYear() + 1); //Cookies expire after 1 year
-    var newOptions =
-    {
-        expiresAt: currentDate
-    }
-    jaaulde.utils.cookies.setOptions(newOptions);
-
-    /*
-* Read Auto-bacana cookie (true by default)
-*/
-    var value = jaaulde.utils.cookies.get(COOKIE_bacana);
-    autobacana = value != null ? value : true;
-
-    /*
-* Read Auto-Queue cookie (false by default)
-*/
-    value = jaaulde.utils.cookies.get(COOKIE_QUEUE);
-    autoqueue = value != null ? value : false;
-
-    /*
-* Read hidevideo cookie (false by default)
-*/
-    value = jaaulde.utils.cookies.get(COOKIE_HIDE_VIDEO);
-    hideVideo = value != null ? value : false;
-	
-
-    /*
-* Read test cookie (true by default)
-*/
-    value = jaaulde.utils.cookies.get(COOKIE_TEST);
-    test = value != null ? value : true;
-	
-
-    /*
-* Read userlist cookie (true by default)
-*/
-    value = jaaulde.utils.cookies.get(COOKIE_USERLIST);
-    userList = value != null ? value : true;
-
-    onCookiesLoaded();
-}
-
-
-/*
-* Write the CSS rules that are used for components of the
-* Plug.bot UI.
-*/
-$('body').prepend('<style type="text/css" id="plugbot-css">#plugbot-ui { position: absolute; margin-left: 349px; }#plugbot-ui p { background-color: #0b0b0b; height: 32px; padding-top: 8px; padding-left: 8px; padding-right: 6px; cursor: pointer; font-variant: small-caps; width: 84px; font-size: 15px; margin: 0; }#plugbot-ui h2 { background-color: #0b0b0b; height: 112px; width: 156px; margin: 0; color: #fff; font-size: 13px; font-variant: small-caps; padding: 8px 0 0 12px; border-top: 1px dotted #292929; }#plugbot-userlist { border: 6px solid rgba(10, 10, 10, 0.8); border-left: 0 !important; background-color: #000000; padding: 8px 0px 20px 0px; width: 12%; }#plugbot-userlist p { margin: 0; padding-top: 4px; text-indent: 24px; font-size: 10px; }#plugbot-userlist p:first-child { padding-top: 0px !important; }#plugbot-queuespot { color: #42A5DC; text-align: left; font-size: 15px; margin-left: 8px }');
-$('body').append('<div id="plugbot-userlist"></div>');
-
-
-/**
-* Continue initialization after user's settings are loaded
-*/
-function onCookiesLoaded()
-{
-    /*
-* Hit the bacana button, if autobacana is enabled.
-*/
-    if (autobacana)
-    {
-        $('#button-vote-positive').click();
-    }
-
-    /*
-* Auto-queue, if autoqueue is enabled and the list is not full yet.
-*/
-
-    if (autoqueue && !isInQueue())
-    {
-        joinQueue();
-    }
-
-    /*
-* Hide video, if hideVideo is enabled.
-*/
-    if (hideVideo)
-    {
-        $('#yt-frame').animate(
-            {
-                'height': (hideVideo ? '0px' : '271px')
-            },
-            {
-                duration: 'fast'
-            });
-        $('#playback .frame-background').animate(
-            {
-                'opacity': (hideVideo ? '0' : '0.91')
-            },
-            {
-                duration: 'medium'
-            });
-    }
-
-    /*
-	*/
-    if (test)
-    {
-        $('#yt-frame').animate(
-            {
-                'height': (test ? '0px' : '271px')
-            },
-            {
-                duration: 'fast'
-            });
-        $('#playback .frame-background').animate(
-            {
-                'opacity': (test ? '0' : '0.91')
-            },
-            {
-                duration: 'medium'
-            });
-    }
-
-    /*
-* Generate userlist, if userList is enabled.
-*/
-    if (userList)
-    {
-        populateUserlist();
-    }
-
-    /*
-* Call all init-related functions to start the software up.
-*/
-    initAPIListeners();
-    displayUI();
-    initUIListeners();
+var rulesMsg = "1- Tempo máximo para musicas: 6 minutos e 30 segundos. 2- Não escrever em /me e /em. 3- Respeitar os moderadores da sala. 4- Sem Flood no chat . 5- Não fique pedindo cargo.";
+var rulesMsg2 = "Temas permitidos: Electro , Dubstep , Techno , Trap , EDM .";
+var rulesMsg3 = "";
+var linksMsg = [""];
+var skipMsg = ["Por favor, não nos mande pular a música, nós decidimos se pulamos ou não!!"];
+var fansMsg = ["Ganhe seus fãs tocando músicas boas e interagindo com todos :)."];
+var wafflesMsg = ["Entrem no nosso grupo no facebook, lá voce ficará por dentro de tudo que rola na EDT : https://www.facebook.com/groups/EDTplugdj/ "];
+var bhvMsg = ["Não venha com macacada aqui, porfavor!"];
+var sleepMsg = ["Indo descansar um pouco, mas tarde to de volta :)"];
+var workMsg = ["Vou ficar um pouco ocupado agora, mencione se for importante!"];
+var afkMsg = ["Ausente no momento, volto logo!"];
+var backMsg = ["To de volta negada :)"];
+
+var autoAwayMsg = ["Eu estou em uma aventura (AUSENTE)"];
+var autoSlpMsg = ["Descansando no momento ..."];
+var autoWrkMsg = ["Nao pude te responder agora, na volta irei responder."];
+
+var styles = [
+            '.sidebar {position: fixed; top: 0; height: 100%; width: 200px; z-index: 99999; background-image: linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -o-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -moz-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -webkit-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -ms-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #000000),color-stop(1, #3B5678));}',
+            '.sidebar#side-right {right: -190px;z-index: 99999;}',
+            '.sidebar#side-left {left: -190px; z-index: 99999; }',
+            '.sidebar-handle {width: 12px;height: 100%;z-index: 99999;margin: 0;padding: 0;background: rgb(96, 141, 197);box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .9);cursor: "ne-resize";}',
+            '.sidebar-handle span {display: block;position: absolute;width: 10px;top: 50%;text-align: center;letter-spacing: -1px;color: #000;}',
+            '.sidebar-content {position: absolute;width: 185px;height: 100%; padding-left: 15px}',
+            '.sidebar-content2 {position: absolute;width: 185px;height: 100%; overflow: auto}',
+            '.sidebar-content2 h3 {font-weight: bold; padding-left: 5px; padding-bottom: 5px; margin: 0;}',
+            '.sidebar-content2 a {font-weight: bold; font-size: 13px; padding-left: 5px;}',
+            '#side-right .sidebar-handle {float: left;}',
+            '#side-left .sidebar-handle {float: right;}',
+            '#side-right a {display: block;min-width: 100%;cursor: pointer;padding: 4px 5px 8px 5px;border-radius: 4px;font-size: 13px;}',
+            '.sidebar-content2 span {display: block; min-width: 94%;cursor: pointer;border-radius: 4px; padding: 0 5px 0 5px; font-size: 12px;}',
+            '#side-right a span {padding-right: 8px;}',
+            '#side-right a:hover {background-color: rgba(97, 146, 199, 0.65);text-decoration: none;}',
+            '.sidebar-content2 span:hover {background-color: rgba(97, 146, 199, 0.65);text-decoration: none;}',
+            '.sidebar-content2 a:hover {text-decoration: none;}',
+            '.chat-bouncer {background: url(http://i.imgur.com/9qWWO4L.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
+            '.chat-manager {background: url(http://i.imgur.com/hqqhTcp.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
+            '.chat-cohost {background: url(http://i.imgur.com/njajqVG.png) no-repeat 0 5px;padding-left: 17px;width:292px;}',
+            '.chat-host {background: url(http://i.imgur.com/njajqVG.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
+            '#dj-console, #dj-console {background-image: url(http://i.imgur.com/gqdMdaz.gif);min-height:33px;min-width:131px;}',
+            '.chat-from-you {color: #0099FF;font-weight: bold;margin-top: 0px; padding-top: 0px;}',
+            '.chat-from-featureddj {color: rgb(255, 0, 135); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
+            '.chat-from-bouncer {color: rgb(199, 0, 199); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
+            '.chat-from-manager {color: rgb(255, 199, 148); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
+            '.chat-from-cohost {color: rgb(255, 92, 0); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
+            '.chat-from-host {color: #32CD32;font-weight: bold;margin-top: 0px; padding-top: 0px;}',
+            '#user-points-title {color: #FFFFFF; position: absolute; left: 36px; font-size: 10px;}',
+            '#user-fans-title {color: #FFFFFF; position: absolute; left: 29px; font-size: 10px;}',
+            '.meta-header span {color: rgba(255, 255, 255, 0.79); position: absolute; left: 15px; font-size: 10px;}',
+            '#button-lobby {background-image: url(http://i.imgur.com/brpRaSY.png);}',
+            '#volume-bar-value {background-image: url(http://i.imgur.com/xmyonON.png) ;}',
+            '.chat-message:nth-child(2n), .chat-mention:nth-child(2n), .chat-skip:nth-child(2n), .chat-moderation:nth-child(2n), .chat-emote:nth-child(2n), .chat-update:nth-child(2n) {background-color: rgba(26, 26, 26, 0.65);}',
+            '.frame-background {background-color: rgba(0, 0, 0, 0.8);}',
+            '#hr-div {height: 100%; width: 100%;margin: 0;padding-left: 12px;}',
+            '#hr2-div2 {height: 100%; width: 100%;margin: 0;}',
+            '#hr-style {position: absolute;display: block;height: 20px;width: 100%;bottom: 0%;background-image: url(http://i.imgur.com/jQhf3BW.png);}',
+            '#hr2-style2 {position: absolute;display: block;height: 20px;width: 94%%;bottom: 0%;background-image: url(http://i.imgur.com/jQhf3BW.png);}',
+            '#side-left h3 {padding-left: 5px}',
+            '::-webkit-scrollbar {height: 6px; width: 6px;}',
+            '::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); -webkit-border-radius: 6px;border-radius: 6px;}',
+            '::-webkit-scrollbar-thumb {-webkit-border-radius: 2px;border-radius: 6px;background: rgba(232,37,236,0.8); -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.5);}',
+            '::-webkit-scrollbar-thumb:window-inactive {background: rgba(232,37,236,0.4);}',
+];
+
+var scripts = [
+            '(function(e){e.fn.hoverIntent=function(t,n,r){var i={interval:100,sensitivity:7,timeout:0};if(typeof t==="object"){i=e.extend(i,t)}else if(e.isFunction(n)){i=e.extend(i,{over:t,out:n,selector:r})}else{i=e.extend(i,{over:t,out:t,selector:n})}var s,o,u,a;var f=function(e){s=e.pageX;o=e.pageY};var l=function(t,n){n.hoverIntent_t=clearTimeout(n.hoverIntent_t);if(Math.abs(u-s)+Math.abs(a-o)<i.sensitivity){e(n).off("mousemove.hoverIntent",f);n.hoverIntent_s=1;return i.over.apply(n,[t])}else{u=s;a=o;n.hoverIntent_t=setTimeout(function(){l(t,n)},i.interval)}};var c=function(e,t){t.hoverIntent_t=clearTimeout(t.hoverIntent_t);t.hoverIntent_s=0;return i.out.apply(t,[e])};var h=function(t){var n=jQuery.extend({},t);var r=this;if(r.hoverIntent_t){r.hoverIntent_t=clearTimeout(r.hoverIntent_t)}if(t.type=="mouseenter"){u=n.pageX;a=n.pageY;e(r).on("mousemove.hoverIntent",f);if(r.hoverIntent_s!=1){r.hoverIntent_t=setTimeout(function(){l(n,r)},i.interval)}}else{e(r).off("mousemove.hoverIntent",f);if(r.hoverIntent_s==1){r.hoverIntent_t=setTimeout(function(){c(n,r)},i.timeout)}}};return this.on({"mouseenter.hoverIntent":h,"mouseleave.hoverIntent":h},i.selector)}})(jQuery)',
+            'if (jQuery.easing.easeOutCirc === undefined) jQuery.easing.easeOutCirc = function(e,f,a,h,g){return h*Math.sqrt(1-(f=f/g-1)*f)+a}',
+            '$("#side-right").hoverIntent(function() {var timeout_r = $(this).data("timeout_r");if (timeout_r) {clearTimeout(timeout_r);}$(this).animate({"right": "0px"}, 500, "easeOutCirc");}, function() {$(this).data("timeout_r", setTimeout($.proxy(function() {$(this).animate({"right": "-190px"}, 500, "easeOutCirc");}, this), 500));});',
+];
+
+function initAPIListeners() {
+API.on(API.DJ_ADVANCE, djAdvanced);
+   API.on(API.CHAT, autoRespond);
+   API.on(API.DJ_UPDATE, queueUpdate);
+   API.on(API.VOTE_UPDATE, function (obj) {
+             populateUserlist();
+
+     });
+API.on(API.USER_JOIN, function (user) {
+           populateUserlist();
+     });
+     API.on(API.USER_LEAVE, function (user) {
+             populateUserlist();
+     });
 }
