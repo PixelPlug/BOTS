@@ -1,3 +1,3 @@
-var textareaX = document.getElementById( 'Fans' ).innerHTML;
-textareaX = textareaX.replace(/tubaína/gi, "Parceros");
+var textareaX = document.getElementById( 'seu_textarea' ).innerHTML;
+textareaX = textareaX.replace(/Fans/gi, "loucos!");
 document.getElementById( 'seu_textarea' ).innerHTML = textareaX;
