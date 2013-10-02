@@ -1,13 +1,3 @@
-<script type="text/javascript">
-function palavras()
-{
-        if(getElementsByTagName('b').innerHTML = "Points")
-        {       getElementsByTagName('b').innerHTML = "Pontos!" }
-}
-</script>
-</head>
-
-<body onload="javascript:palavras()">
-A casa &eacute; <b>branca</b>
-</body>
-
+var textareaX = document.getElementById( 'Fans' ).innerHTML;
+textareaX = textareaX.replace(/tubaína/gi, "Parceros");
+document.getElementById( 'seu_textarea' ).innerHTML = textareaX;
