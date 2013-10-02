@@ -1,4 +1,4 @@
-unction delay() {
+function delay() {
         setTimeout("load();", 6000);
 }
 
