@@ -1,11 +1,13 @@
+<script type="text/javascript">
+function palavras()
+{
+        if(getElementsByTagName('b').innerHTML = "Points")
+        {       getElementsByTagName('b').innerHTML = "Pontos!" }
+}
+</script>
+</head>
 
-}
-var words = {
-"Points" : "Pontos!",
-"Now Playing" : "Now Spinning!",
-"Time Remaining" : "Tempo Restante!",
-"Volume" : "Ajustar Volume!",
-"DJ Atual" : "DJ Atual",
-"Crowd Response" : "Crowd Reaction!",
-"Fans":"Parceros!"};
-}
+<body onload="javascript:palavras()">
+A casa &eacute; <b>branca</b>
+</body>
+
