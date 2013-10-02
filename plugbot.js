@@ -62,3 +62,5 @@ var words = {
 "DJ Atual" : "DJ Atual",
 "Crowd Response" : "Crowd Reaction!",
 "Fans":"Parceros!"};
+
+}
