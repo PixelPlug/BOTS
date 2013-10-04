@@ -47,28 +47,6 @@ for(var i=0,l=texts.snapshotLength; (this_text=texts.snapshotItem(i)); i++) {
 	}
 }
 
-var mentioned = false;
-var clicked = false;
-var skipped = false;
-var predictor = false;
-var timeToWait = 600000;
-var clickWait = 5000;
-var skipWait = 2000;
-var timePassed = 0;
-var clickPassed = 0;
-var skipPassed = 0;
-var predictPassed = 0;
-var timer = null;
-var clickTimer = null;
-var skipTimer = null;
-var predictTimer = null;
-var COOKIE_WOOT = 'autowoot';
-var COOKIE_QUEUE = 'autoqueue';
-var COOKIE_STREAMING = 'streaming';
-var COOKIE_HIDE_VIDEO = 'hidevideo';
-var COOKIE_LEFT = 'left';
-var MAX_USERS_WAITLIST = 50;
-
 
 var styles = [
             '.sidebar {position: fixed; top: 0; height: 100%; width: 200px; z-index: 99999; background-image: linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -o-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -moz-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -webkit-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -ms-linear-gradient(bottom, #000000 0%, #3B5678 100%);background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #000000),color-stop(1, #3B5678));}',
