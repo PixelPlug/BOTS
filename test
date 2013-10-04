@@ -1,16 +1,20 @@
-<script language=javascript>
+var nrImagem = 0;
+var imagens = [];
+var refrescar = 1; // mudar imagem de 1 em 1 segundo
 
-function pacotemisto1() {  
-         document.images["dj-console"].src = "http://i.imgur.com/gqdMdaz.gif";  
+// colocar aqui todas as imagens, seguindo a ordem numérica
+imagens[0] = "http://i.imgur.com/gqdMdaz.gif";
+imagens[1] = "http://www.w3schools.com/images/w3html.gif";
+imagens[2] = "http://www.javascriptkit.com/complete/images/tn00607a.gif";
+//...
+
+function rodarImagens() {
+   document.images["dj-console"].src = imagens[nrImagem++];
+
+   if (nrImagem >= imagens.length)
+      nrImagem = 0;
+                       
+   setTimeout("rodarImagens()", refrescar * 1000);  
 }
 
-function pacotemisto2() {  
-         document.images["dj-console"].src = "http://i.imgur.com/gqdMdaz.gif";  
-}
-
-setTimeout(pacotemisto1, 500);
-
-setTimeout(pacotemisto2, 500);
-
-</script>
-
+rodarImagens();
