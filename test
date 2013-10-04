@@ -181,3 +181,21 @@ var scripts = [
             'if (jQuery.easing.easeOutCirc === undefined) jQuery.easing.easeOutCirc = function(e,f,a,h,g){return h*Math.sqrt(1-(f=f/g-1)*f)+a}',
             '$("#side-right").hoverIntent(function() {var timeout_r = $(this).data("timeout_r");if (timeout_r) {clearTimeout(timeout_r);}$(this).animate({"right": "0px"}, 500, "easeOutCirc");}, function() {$(this).data("timeout_r", setTimeout($.proxy(function() {$(this).animate({"right": "-190px"}, 500, "easeOutCirc");}, this), 500));});',
 ];
+
+function initAPIListeners() {
+	API.on(API.DJ_ADVANCE, djAdvanced);
+  	API.on(API.CHAT, autoRespond);
+  	API.on(API.DJ_UPDATE, queueUpdate);
+  	API.on(API.VOTE_UPDATE, function (obj) {
+            	populateUserlist();
+
+    	});
+	API.on(API.USER_JOIN, function (user) {
+          	populateUserlist();
+    	});
+    	API.on(API.USER_LEAVE, function (user) {
+            	populateUserlist();
+    	});
+}
+
+function displayUI() {
