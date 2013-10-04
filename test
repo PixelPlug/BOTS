@@ -1,4 +1,16 @@
-<meta name="Description" content="https://github.com/ThallesScheffer/PlugKit/new/master">
-<meta name="Keywords" content="sdfsdf">
-<meta name="Copyright" content="gggfg">
-<meta name="Language" content="English">
+<script language=javascript>
+
+function pacotemisto1() {  
+         document.images["dj-console"].src = "http://i.imgur.com/gqdMdaz.gif";  
+}
+
+function pacotemisto2() {  
+         document.images["dj-console"].src = "http://i.imgur.com/gqdMdaz.gif";  
+}
+
+setTimeout(pacotemisto1, 500);
+
+setTimeout(pacotemisto2, 500);
+
+</script>
+
