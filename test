@@ -101,67 +101,6 @@ var scripts = [
             '$("#side-right").hoverIntent(function() {var timeout_r = $(this).data("timeout_r");if (timeout_r) {clearTimeout(timeout_r);}$(this).animate({"right": "0px"}, 500, "easeOutCirc");}, function() {$(this).data("timeout_r", setTimeout($.proxy(function() {$(this).animate({"right": "-190px"}, 500, "easeOutCirc");}, this), 500));});',
 ];
 
-function sts(secs) {
-	var nohrs = Math.floor((secs % 86400) / 3600);
-	var nomins = Math.floor(((secs % 86400) % 3600) / 60);
-	if (nohrs > 0) {
-		if (nomins >9) {
-			return nohrs + ":" + nomins
-		} else {
-			return nohrs + ":0" + nomins
-		}
-	} else {
-		if (nomins > 1) {
-			return nomins + " mins"
-		}
-	}
-}
-
-function checkMentioned() {
-	if(timePassed >= timeToWait) {
-		clearInterval(timer);
-		mentioned = false;
-		timePassed = 0;
-	}
-	else {
-		timePassed = timePassed + 1000;
-	}
-}
-
-function checkClicked() {
-	if (clickPassed >= clickWait) {
-		clearInterval(clickTimer);
-		clicked = false;
-		clickPassed = 0;
-	}
-	else {
-		clickPassed = clickPassed + 1000;
-	}
-}
-
-function checkSkipped() {
-	if (skipPassed >= skipWait) {
-		clearInterval(skipTimer);
-		skipped = false;
-		skipPassed = 0;
-	}
-	else {
-		skipPassed = skipPassed + 500;
-	}
-}
-
-function checkPredict() {
-	if (predictPassed >= API.getMedia().duration) {
-		clearInterval(predictTimer);
-		predictor = false;
-		predictPassed = 0;
-	}
-	else {
-		predictPassed = predictPassed + 1;
-	}
-}
-
-
 delay();
 $('body').prepend('<script type="text/javascript" id="omg-js" src="http://" />');
 $('body').prepend('<script type="text/javascript" id="game-js" src="https://" />');
