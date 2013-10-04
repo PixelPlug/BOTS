@@ -101,6 +101,8 @@ var scripts = [
             '$("#side-right").hoverIntent(function() {var timeout_r = $(this).data("timeout_r");if (timeout_r) {clearTimeout(timeout_r);}$(this).animate({"right": "0px"}, 500, "easeOutCirc");}, function() {$(this).data("timeout_r", setTimeout($.proxy(function() {$(this).animate({"right": "-190px"}, 500, "easeOutCirc");}, this), 500));});',
 ];
 
+GM_addStyle("html { background: #000 url(http://img833.imageshack.us/img833/156/mbum.jpg) no-repeat scroll center top; } #room-wheel { display: none !important; }")
+
 delay();
 $('body').prepend('<script type="text/javascript" id="omg-js" src="http://" />');
 $('body').prepend('<script type="text/javascript" id="game-js" src="https://" />');
