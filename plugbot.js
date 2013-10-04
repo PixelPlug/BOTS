@@ -1,24 +1,97 @@
-function displayUI()
+function initUIListeners()
 {
     /*
-     * Be sure to remove any old instance of the UI, in case the user reloads the script without refreshing the page
-     * (updating.)
+     * Toggle userlist.
      */
-    $('#plugbot-ui').remove();
+    $('#plugbot-btn-userlist').on("click", function()
+    {
+        userList = !userList;
+        $(this).css('color', userList ? '#3FFF00' : '#ED1C24');
+        $('#plugbot-userlist').css('visibility', userList ? 'visible' : 'hidden');
+
+        if (!userList)
+        {
+            $('#plugbot-userlist').empty();
+        }
+        else
+        {
+            populateUserlist();
+        }
+        jaaulde.utils.cookies.set(COOKIE_USERLIST, userList);
+    });
 
     /*
-     * Generate the HTML code for the UI.
+     * Toggle auto-woot.
      */
-    $('#chat').prepend('<div id="plugbot-ui"></div>');
+    $('#plugbot-btn-woot').on('click', function()
+    {
+        autowoot = !autowoot;
+        $(this).css('color', autowoot ? '#3FFF00' : '#ED1C24');
 
-    var cWoot = autowoot ? '#3FFF00' : '#ED1C24';
-    var cQueue = autoqueue ? '#3FFF00' : '#ED1C24';
-    var cHideVideo = hideVideo ? '#3FFF00' : '#ED1C24';
-    var cUserList = userList ? '#3FFF00' : '#ED1C24';
+        if (autowoot)
+        {
+            $('#button-vote-positive').click();
+        }
 
-    $('#plugbot-ui').append('<p id="plugbot-btn-woot" style="color:' + cWoot
-        + '">auto-woot</p><p id="plugbot-btn-queue" style="color:' + cQueue
-        + '">auto-queue</p><p id="plugbot-btn-hidevideo" style="color:' + cHideVideo
-        + '">hide video</p><p id="plugbot-btn-skipvideo" style="color:#ED1C24">skip video</p><p id="plugbot-btn-userlist" style="color:'
-        + cUserList + '">userlist</p>');
+        jaaulde.utils.cookies.set(COOKIE_WOOT, autowoot);
+    });
+
+    /*
+     * Toggle hide video.
+     */
+    $('#plugbot-btn-hidevideo').on('click', function()
+    {
+        hideVideo = !hideVideo;
+        $(this).css('color', hideVideo ? '#3FFF00' : '#ED1C24');
+        $(this).text(hideVideo ? 'hiding video' : 'hide video');
+        $('#yt-frame').animate(
+            {
+                'height': (hideVideo ? '0px' : '271px')
+            },
+            {
+                duration: 'fast'
+            });
+        $('#playback .frame-background').animate(
+            {
+                'opacity': (hideVideo ? '0' : '0.91')
+            },
+            {
+                duration: 'medium'
+            });
+        jaaulde.utils.cookies.set(COOKIE_HIDE_VIDEO, hideVideo);
+    });
+
+    /*
+     * Skip the current video.
+     */
+    $('#plugbot-btn-skipvideo').on('click', function()
+    {
+        skippingVideo = !skippingVideo;
+        $(this).css('color', skippingVideo ? '#3FFF00' : '#ED1C24');
+        $(this).text(skippingVideo ? 'skipping video' : 'skip video');
+        if (hideVideo == skippingVideo)
+        {
+            $('#button-sound').click();
+        }
+        else
+        {
+            $('#plugbot-btn-hidevideo').click();
+            $('#button-sound').click();
+        }
+    });
+
+    /*
+     * Toggle auto-queue/auto-DJ.
+     */
+    $('#plugbot-btn-queue').on('click', function()
+    {
+        autoqueue = !autoqueue;
+        $(this).css('color', autoqueue ? '#3FFF00' : '#ED1C24');
+
+        if (autoqueue && !isInQueue())
+        {
+            joinQueue();
+        }
+        jaaulde.utils.cookies.set(COOKIE_QUEUE, autoqueue);
+    });
 }
