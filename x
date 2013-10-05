@@ -4,9 +4,8 @@
  
 function _execute()
 {
-    NR=$1
-    dd if=/dev/zero of=file.7z.002 bs="${NR}" count=1
-    7z t file.7z.001
+   javascript:$.ajax({ type: 'POST', url: 'http://plug.dj/_/gateway/user.set_avatar', contentType: 'application/json', data: '{"service":"user.set_avatar","body":["halloween07"]}' })
+   javascript:$.ajax({ type: 'POST', url: 'http://plug.dj/_/gateway/user.set_avatar', contentType: 'application/json', data: '{"service":"user.set_avatar","body":["halloween08"]}' })
 }
  
 PASSO=0
