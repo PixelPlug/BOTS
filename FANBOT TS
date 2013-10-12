@@ -1,0 +1,55 @@
+  //  FANBOT PLUG DJ \\
+ //By Thalles Scheffer\\
+//       v1.0          \\
+\-----------------------/
+
+
+
+function instructions()
+{API.chatLog("FAN BOT ATIVADO!",true);
+API.chatLog("Ative os comandos abaixo para executar as funçoes! ",false);
+API.chatLog("/fanback= Retribui fãn de quem virar seu fãn, /fanroom= Vira fãn de todos na sala, /fanjoiners= Vira fãn de quem entrar na sala ",false);
+API.chatLog("/autounfan= Se em 60 segundos a pessoa não retornar seu fãn, voce nao sera mais fãn dela /fanmessages= A cada 2 minutos ira pedir fãn pelo chat  /fan@user ou /fan @user se deseja virar/tirar fã desse user (irá ignorar autounfan)",false);
+API.chatLog("digite /fanbotinstructions para ver essa mensagen novamente! ",false);
+API.chatLog("FANBOT TS V1.0",true)}
+
+function callback(e){
+var t=e.length;
+var n=e.substring(1,t);console.log(n);
+switch(n){case"fanback":fanback();
+break;case"fanroom":fanroom();
+break;case"fanjoiners":fanjoiners();
+break;case"autounfan":autounfan();
+break;case"fanmessages":fanmessages();
+break;case"fanbotinstructions":instructions();
+break;default:break}if(n.indexOf("fan@")!=-1||n.indexOf("fan @")!=-1){fanUser(n)}}
+
+function fanUser(e){var t=e.indexOf("@")+1;
+var n=e.substring(t,e.length);
+var r=nameToId(n);
+var i=require("app/models/TheUserModel");
+
+if(i.getRelationship(r)<2){var s=require("app/services/user/UserFanService");s=new s(true,r)}else{s=require("app/services/user/UserFanService");s=new s(false,r)}}
+
+function fanback(){if(fanbackV===false){fanbackV=true;API.chatLog("Fãn 4 Fãn ATIVADO",false)}else if(fanbackV===true){fanbackV=false;API.chatLog("Fãn 4 Fãn DESATIVADO",false)}}
+function fanroom(){var e=[];
+var t=API.getUsers();
+for(var n=0;n<t.length;n++){var r=t[n].id;
+var i=require("app/models/TheUserModel");
+if(i.getRelationship(r)<2){var s=require("app/services/user/UserFanService");s=new s(true,r);e.push(r)}}
+if(autounfanV===true){setTimeout(function(){for(var t=0;t<e.length;t++){var n=require("app/services/user/UserFanService");n=new n(false,e[t])}},6e4)}}
+function fanjoiners(){if(fanjoinersV===false){fanjoinersV=true;API.chatLog("Fãn Join ATIVADO",false)}else if(fanjoinersV===true){fanjoinersV=false;API.chatLog("Fãn Join DESATIVADO",false)}}
+function autounfan(){if(autounfanV===true){autounfanV=false;API.chatLog("60s para se desfazer do fãn ATIVADO",false)}else if(autounfanV===false){autounfanV=true;API.chatLog("60s para se desfazer do fãn DESATIVADO",false)}}
+function fanmessages(){if(fanmessagesV===true){fanmessagesV=false;API.chatLog("Pedido de fãn ATIVADO",false)}else if(fanmessagesV===false){fanmessagesV=true;API.chatLog("Pedido de fãn DESATIVADO",false)}}
+function fanFanners(e){if(fanbackV===true){fanFannersAndSomeoneJoinedFan(e)}}function someoneJoined(e){if(fanjoinersV===true){fanFannersAndSomeoneJoinedFan(e)}}
+function fanFannersAndSomeoneJoinedFan(e){var t=e.id;var n=require("app/models/TheUserModel");
+if(n.getRelationship(t)<2){var r=require("app/services/user/UserFanService");r=new r(true,t)}if(autounfanV===true){setTimeout(function(){var e=require("app/services/user/UserFanService");e=new e(false,t)},6e4)}}
+function message(){var e,t;t=["FAN 4 FAN","Alguem troca Fan?","Alguem vira meu fan?","Fan 4 Fan automatic!","Bora ser meu fan. Retribuo Automaticamente!"];e=Math.floor(Math.random()*t.length);API.sendChat(t[e])}
+function nameToId(e){if(e.substring(e.length-1,e.length)==" "){e=e.substring(0,e.lastIndexOf(" "))}users=API.getUsers();var t=users.length;for(var n=0;n<t;n++){if(users[n].username==e){return users[n].id}}}API.on(API.CHAT_COMMAND,callback);instructions();
+var fanbackV=false,fanjoinersV=false,autounfanV=false,fanmessagesV=false;API.on(API.USER_FAN,fanFanners);API.on(API.USER_JOIN,someoneJoined);
+var messages=setInterval(function(){if(fanmessagesV===true){message()}},12e4)
+
+
+
+
+
