@@ -70,6 +70,7 @@ var styles = [
             '.chat-manager {background: url(http://i.imgur.com/hqqhTcp.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
             '.chat-cohost {background: url(http://i.imgur.com/njajqVG.png) no-repeat 0 5px;padding-left: 17px;width:292px;}',
             '.chat-host {background: url(http://i.imgur.com/njajqVG.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
+            '#button-vote-positive, #button-vote-positive {background-image: url(http://i.picasion.com/pic74/e4b439c5b002b3d8a4fa5a8af4050a2c.gif);min-height:33px;min-width:131px;}',
             '#dj-console, #dj-console {background-image: url(http://i.picasion.com/pic74/e4b439c5b002b3d8a4fa5a8af4050a2c.gif);min-height:33px;min-width:131px;}',
             '.chat-from-you {color: #0099FF;font-weight: bold;margin-top: 0px; padding-top: 0px;}',
             '.chat-from-featureddj {color: rgb(255, 0, 135); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
