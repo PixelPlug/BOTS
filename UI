@@ -78,7 +78,7 @@ var styles = [
             '.chat-from-cohost {color: rgb(255, 92, 0); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
             '.chat-from-host {color: #32CD32;font-weight: bold;margin-top: 0px; padding-top: 0px;}',
             '#user-points-title {color: #FFFFFF; position: absolute; left: 36px; font-size: 10px;}',
-            '#span {color: #FFFFFF; position: absolute; left: 5px; font-size: 20px;}',
+            '.span {color: #FFFFFF; position: absolute; left: 5px; font-size: 20px;}',
             '#user-fans-title {color: #FFFFFF; position: absolute; left: 29px; font-size: 10px;}',
             '.meta-header span {color: rgba(255, 255, 255, 0.79); position: absolute; left: 15px; font-size: 10px;}',
             '#button-lobby {background-image: url(http://i.imgur.com/brpRaSY.png);}',
