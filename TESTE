@@ -1,0 +1,24 @@
+<link rel="stylesheet" type="text/css" href="leightbox.css" />
+<script type="text/javascript" src="prototype.js"></script>
+<script type="text/javascript" src="leightbox.js"></script>
+</head>
+
+<body>
+
+
+<div class="content">
+<p> <a href="#" class="lbOn" rel="pop02">Click here to activate leightbox popup.</a></p>
+</div>
+
+
+
+<!----------// POPUP (ON CLICK) //---------->
+<div id="pop02" class="leightbox">
+<a href="#" class="lbAction" rel="deactivate">×</a>
+
+<div class="scrollbox">
+<h1>This popup loads upon clicking a trigger link.</h1>
+text</div>
+</div>
+
+</body>
