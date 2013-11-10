@@ -1,0 +1,56 @@
+
+
+function instructions()
+{API.chatLog("AutoWoot ATIVADO!",true);
+
+API.chatLog("PixelPlug (Plug.Dj v.0.9.800+)",true)}
+
+bpl = {
+    autowoot: true,
+    clicks: 0,
+    version: 3.02,
+    close: function(){ 
+        API.off(API.DJ_ADVANCE, djAdvance); 
+        API.off(API.CHAT, chat); 
+        $('#woot').unbind('click', doubleClick);
+        }
+    }
+
+function BassPlugLite(){
+window.BPLite = true;
+    
+//Core Functions
+    djAdvance = function(data){
+        if(bpl.autowoot){setTimeout(function(){
+            $("#woot").click();
+        }, 2000);
+        }
+    };
+    
+    };
+    
+    API.on(API.DJ_ADVANCE, djAdvance, this);
+    API.on(API.CHAT, chat, this); 
+
+//CSS/jQuery
+    doubleClick = function() {
+        bpl.clicks++;
+        if (bpl.clicks == 2){
+            bpl.autowoot = !bpl.autowoot;
+            bpl.clicks = 0;
+            require('app/base/Context').trigger('notify', 'icon-woot', bpl.autowoot ? 'AutoWoot is now on' : 'AutoWoot is now off');
+        }
+        setTimeout(function(){
+            bpl.clicks = 0;
+        }, 1000);
+    };
+    
+    $("#woot").bind('click', doubleClick); 
+        
+API.chatLog("Running BassPlugLite V. "+bpl.version);
+$('#woot').click();
+}
+
+if(typeof BPLite !== "undefined") bpl.close();
+
+BassPlugLite();
