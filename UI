@@ -72,7 +72,7 @@ var styles = [
             '.chat-host {background: url(http://i.imgur.com/njajqVG.png) no-repeat 0 5px;padding-left: 17px;width: 292px;}',
             '#button-vote-positive, #button-vote-positive {background-image: url(http://i.picasion.com/pic74/e4b439c5b002b3d8a4fa5a8af4050a2c.gif);min-height:33px;min-width:131px;}',
             '#dj-console, #dj-console {background-image: url(http://i.picasion.com/pic74/e4b439c5b002b3d8a4fa5a8af4050a2c.gif);min-height:33px;min-width:131px;}',
-             '#background.4387d75.jpg, #background.4387d75.jpg {background-image: url(http://img6.imageshack.us/img6/207/nr50.jpg);min-height:33px;min-width:131px;}',
+            '#videoframe, #videoframe {background-image: url(http://img41.imageshack.us/img41/1840/u4kx.png);min-height:33px;min-width:131px;}',
             '#room_cactus, #room_cactus {background-image: url(http://i.picasion.com/pic74/e4b439c5b002b3d8a4fa5a8af4050a2c.gif);min-height:33px;min-width:131px;}',
             '.chat-from-you {color: #0099FF;font-weight: bold;margin-top: 0px; padding-top: 0px;}',
             '.chat-from-featureddj {color: rgb(255, 0, 135); font-weight: bold; margin-top: 0px; padding-top: 0px;}',
