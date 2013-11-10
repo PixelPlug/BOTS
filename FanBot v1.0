@@ -2,7 +2,7 @@ function instructions()
 {API.chatLog("PixelPlug FanBot ATIVADO!",true);
 API.chatLog("Ative os comandos abaixo para executar as funçoes! ",false);
 API.chatLog("/fanback= Retribui fãn de quem virar seu fãn, /fanroom= Vira fãn de todos na sala, /fanjoiners= Vira fãn de quem entrar na sala ",false);
-API.chatLog("/autounfan= Se em 60 segundos a pessoa não retornar seu fãn, voce nao sera mais fãn dela /fanmessages= A cada 2 minutos ira pedir fãn pelo chat  /fan@user ou /fan @user se deseja virar/tirar fã desse user (irá ignorar autounfan)",false);
+API.chatLog("/autounfan= Se em 60 segundos a pessoa não retornar seu fãn, voce nao sera mais fãn dela /fanmessages= A cada 2 minutos ira pedir fãn pelo chat  /fan@user ou /fan @user se deseja virar ou tirar fã desse user (irá ignorar autounfan)",false);
 API.chatLog("digite /fanbotinstructions para ver essa mensagen novamente! ",false);
 API.chatLog("v1.0 (Plug.Dj v.0.9.800+",true)}
 
