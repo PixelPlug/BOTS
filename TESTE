@@ -1,24 +1,7 @@
-<link rel="stylesheet" type="text/css" href="leightbox.css" />
-<script type="text/javascript" src="prototype.js"></script>
-<script type="text/javascript" src="leightbox.js"></script>
-</head>
-
-<body>
-
-
-<div class="content">
-<p> <a href="#" class="lbOn" rel="pop02">Click here to activate leightbox popup.</a></p>
-</div>
-
-
-
-<!----------// POPUP (ON CLICK) //---------->
-<div id="pop02" class="leightbox">
-<a href="#" class="lbAction" rel="deactivate">×</a>
-
-<div class="scrollbox">
-<h1>This popup loads upon clicking a trigger link.</h1>
-text</div>
-</div>
-
-</body>
+function instructions()
+{API.chatLog("PixelPlug FanBot ATIVADO!",true);
+API.chatLog("Ative os comandos abaixo para executar as funçoes! ",false);
+API.chatLog("/fanback= Retribui fãn de quem virar seu fãn, /fanroom= Vira fãn de todos na sala, /fanjoiners= Vira fãn de quem entrar na sala ",false);
+API.chatLog("/autounfan= Se em 60 segundos a pessoa não retornar seu fãn, voce nao sera mais fãn dela /fanmessages= A cada 2 minutos ira pedir fãn pelo chat  /fan@user ou /fan @user se deseja virar ou tirar fã desse user (irá ignorar autounfan)",false);
+API.chatLog("digite /fanbotinstructions para ver essa mensagen novamente! ",false);
+API.chatLog("v1.0 (Plug.Dj v.0.9.800+",true)}
