@@ -1,0 +1,18 @@
+$('body').prepend('<style type="text/css" id="plugavatar-css">#plugavatar { position: absolute; top:0; right:0; background-color: #0b0b0b; }</style><div id="plugavatar"><form id="avaform" action="javascript:"><select><option value="classic01">Vampire M</option><option value="classic02">Vampire F</option><option value="classic03">Frankenstein</option><option value="classic04">Witch</option><option value="classic05">Skeleton M</option><option value="classic06">Skeleton F</option><option value="classic07">Zombie M</option><option value="classic08">Zombie F</option><option value="classic09">Ghost</option><option value="classic10">Werewolf M</option></select><input type="submit" value="Go" /></form></div>');
+$("#avaform").submit(function() { 
+    $.ajax({
+                                        url: "/_/gateway/room.update_options",
+                                        type: 'POST',
+                                        data: JSON.stringify({
+                                                service: "user.set_avatar",
+                                                body: [
+                                                        $("select option:selected").val()
+                                        ]
+                                        }),
+                                        dataType: 'json',
+                                        contentType: 'application/json'
+                                        }).done(function () {
+                                        $(this).addClass("done");
+                                        });
+});
+
